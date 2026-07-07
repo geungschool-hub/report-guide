@@ -161,6 +161,12 @@
   .notice .small{display:block;margin-top:9px;color:#5a6b7a;font-size:12.5px}
   .btn.export{background:#e2564a;color:#fff;flex:0 0 auto;min-width:150px;box-shadow:0 4px 12px rgba(226,86,74,.3)}
   .btn.export:hover{background:#c9463b}
+  /* 계획서 제출(Firebase) */
+  .btn.submit{flex:1;min-width:100%;background:var(--good);color:#fff;font-size:17px;min-height:52px;box-shadow:0 4px 14px rgba(21,138,82,.32)}
+  .btn.submit:hover{background:#0f7442}
+  .submitted-note{margin:-4px 0 10px;background:var(--good-bg);border:1px solid var(--good-line);border-radius:12px;
+    padding:10px 13px;color:var(--good);font-weight:800;font-size:14.5px}
+  .submitted-note span{font-weight:600;color:#4a4658;font-size:12.5px}
 
   /* 인쇄(PDF 내보내기)용 문서 — 화면에선 숨김, 인쇄 때만 보임 */
   #printdoc{display:none}
@@ -428,9 +434,37 @@
 }
 }
 </script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
 "use strict";
 var DATA = JSON.parse(document.getElementById('report-data').textContent);
+
+/* ════════ Firebase (gongju7-vocab — reportPlans/ 공개경로, 무인증 접속) ════════
+   학교망에서 익명로그인이 거부되며 남는 무효 토큰이 RTDB를 막는 사례가 있어,
+   토큰을 비운 뒤 인증 없이 접속한다(examGoals와 동일 패턴). SDK 로드 실패해도
+   앱의 작성/저장 기능은 그대로 동작하도록 전부 guard 처리한다. */
+var FB = { ready:false, db:null };
+(function initFirebase(){
+  try{
+    if(typeof firebase === 'undefined') return;
+    firebase.initializeApp({
+      apiKey: "AIzaSyDbEgNhJr24GjWPYBx63zQ4MyW2dZA6XSs",
+      authDomain: "gongju7-vocab.firebaseapp.com",
+      databaseURL: "https://gongju7-vocab-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "gongju7-vocab",
+      storageBucket: "gongju7-vocab.firebasestorage.app",
+      messagingSenderId: "249343659059",
+      appId: "1:249343659059:web:532b7d74d0a38286c2a746"
+    });
+    FB.db = firebase.database();
+    try{ firebase.auth().signOut(); }catch(e){}
+    FB.ready = true;
+  }catch(e){ console.error('Firebase 초기화 실패', e); FB.ready=false; }
+})();
+var REPORT_ROOT = 'reportPlans';
+function sidKey(s){ return String(s||'').trim().replace(/[.#$\[\]\/]/g,'_'); }
 
 /* 화면 구성: 7단계 + 인용/구조/체크리스트/계획서 */
 var SCREENS = [];
@@ -543,18 +577,22 @@ function renderChecklist(){
 function renderPlan(){
   var h='';
   h += '<div class="eyebrow">지금까지 채운 내용</div><div class="screen-title"><span class="ic">📝</span>내 보고서 계획서</div>';
-  h += '<p class="plan-intro">각 단계 \'직접 해보기\'에 적은 내용을 한곳에 모았다. 아래 정보를 채우고 <b>PDF로 내보내</b> 제출하거나, 이를 바탕으로 보고서를 써서 낼 수 있다.</p>';
+  h += '<p class="plan-intro">각 단계 \'직접 해보기\'에 적은 내용을 한곳에 모았다. 학번·이름을 적고 <b>[계획서 제출하기]</b>를 누르면 선생님에게 바로 전달된다.</p>';
 
   h += '<div class="doit" style="margin-bottom:14px"><h3>🧾 제출자 정보</h3>'+
        '<div class="field"><label>학번</label><input class="meta-in" data-meta="sid" type="text" inputmode="numeric" placeholder="예: 20701" value="'+esc(store.sid||'')+'"></div>'+
        '<div class="field"><label>이름</label><input class="meta-in" data-meta="name" type="text" placeholder="예: 김생명" value="'+esc(store.name||'')+'"></div></div>';
 
-  h += '<div class="notice"><b>📮 제출 방법 — 아래 셋 중 하나를 고른다</b>'+
-       '<div class="opt"><b>① 계획서 제출</b> — 이 계획서를 PDF로 내보내 제출한다.</div>'+
-       '<div class="opt"><b>② 보고서 제출</b> — 계획서를 바탕으로 보고서를 제대로 작성해 제출한다.</div>'+
+  h += '<div class="notice"><b>📮 어떻게 제출하나요?</b>'+
+       '<div class="opt"><b>① 계획서 제출</b> — 학번·이름을 적고 아래 <b>[계획서 제출하기]</b> 한 번이면 끝. 선생님이 바로 받는다.</div>'+
+       '<div class="opt"><b>② 보고서 제출</b> — 계획서를 바탕으로 보고서를 제대로 써서 낸다.</div>'+
        '<div class="opt"><b>③ 발표까지</b> — 보고서를 쓰고 수업에서 발표한다.</div>'+
-       '<span class="small">셋 다 세특(과목별 세부능력 및 특기사항)에 반영된다. ①·②는 <b>학번·이름</b>을 적어 아래 이메일로 보낸다.</span><br>'+
-       '<span class="mail">geungschool@hyehwa-h.sen.hs.kr</span></div>';
+       '<span class="small">셋 다 세특(과목별 세부능력 및 특기사항)에 반영된다. 인터넷이 안 되면 <b>[PDF로 내보내기]</b>로 저장해 내도 된다.</span></div>';
+
+  h += '<div class="plan-actions"><button class="btn submit" id="submitplan">'+(store.submittedAt?'🔄 다시 제출하기':'📤 계획서 제출하기')+'</button></div>';
+  if(store.submittedAt){
+    h += '<div class="submitted-note">✅ 제출됨 · '+esc(fmtWhen(store.submittedAt))+'<span> — 다시 제출하면 최신 내용으로 덮어써진다</span></div>';
+  }
 
   h += '<div class="plan-actions">'+
        '<button class="btn export" id="exportpdf">📄 PDF로 내보내기</button>'+
@@ -585,8 +623,58 @@ function buildPlanText(){
     out.push('');
   });
   out.push('※ 제출(택1): ①계획서  ②보고서  ③발표 — 셋 다 세특 반영.');
-  out.push('※ ①·②는 학번·이름과 함께 geungschool@hyehwa-h.sen.hs.kr 로 보낸다.');
+  out.push('※ 계획서는 앱의 [계획서 제출하기] 버튼으로 선생님에게 바로 전달된다.');
   return out.join('\n');
+}
+
+/* 제출 시각 표시용 */
+function fmtWhen(ts){
+  try{ var d=new Date(ts); return (d.getMonth()+1)+'월 '+d.getDate()+'일 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+  catch(e){ return ''; }
+}
+
+/* ── 계획서 Firebase 제출 ── */
+function buildSubmission(){
+  var answers={};
+  DATA.steps.forEach(function(s){
+    s.templatePrompts.forEach(function(tp,j){
+      var k=s.id+':'+j, v=(store.inputs[k]||'').trim();
+      if(v) answers[k]=v;
+    });
+  });
+  return {
+    sid: (store.sid||'').trim(),
+    name: (store.name||'').trim(),
+    answers: answers,
+    planText: buildPlanText(),
+    submittedAt: store.submittedAt || Date.now(),
+    updatedAt: Date.now()
+  };
+}
+var submitting=false;
+function doSubmit(){
+  if(submitting) return;
+  var sid=(store.sid||'').trim(), name=(store.name||'').trim();
+  if(!sid || !name){ alert('학번과 이름을 먼저 적어 주세요. 그래야 선생님이 누구 것인지 알 수 있어요.'); return; }
+  var filled=false;
+  DATA.steps.forEach(function(s){ s.templatePrompts.forEach(function(tp,j){ if((store.inputs[s.id+':'+j]||'').trim()) filled=true; }); });
+  if(!filled){ if(!confirm('아직 적은 내용이 거의 없어요. 그래도 제출할까요?')) return; }
+  if(!FB.ready || !FB.db){ alert('지금은 인터넷 연결이 안 되는 것 같아요. 잠시 후 다시 시도하거나, 아래 [PDF로 내보내기]로 저장해 제출해 주세요.'); return; }
+
+  var btn=document.getElementById('submitplan');
+  submitting=true; if(btn){ btn.disabled=true; btn.textContent='제출 중…'; }
+  var now=Date.now();
+  var payload=buildSubmission(); payload.updatedAt=now; if(!store.submittedAt) payload.submittedAt=now;
+  FB.db.ref(REPORT_ROOT+'/'+sidKey(sid)).set(payload).then(function(){
+    store.submittedAt = payload.submittedAt; save();
+    submitting=false;
+    alert('제출 완료! 선생님에게 잘 전달됐어요. 내용을 고치면 언제든 다시 제출할 수 있어요.');
+    render();
+  }).catch(function(e){
+    console.error('제출 실패', e);
+    submitting=false; if(btn){ btn.disabled=false; btn.textContent=store.submittedAt?'🔄 다시 제출하기':'📤 계획서 제출하기'; }
+    alert('제출에 실패했어요 😢\n인터넷 상태를 확인하고 다시 눌러 주세요. 계속 안 되면 [PDF로 내보내기]로 저장해 제출해 주세요.\n('+((e&&(e.code||e.message))||'unknown')+')');
+  });
 }
 
 /* PDF 내보내기 = 인쇄용 문서 채우고 브라우저 인쇄(→ PDF로 저장) */
@@ -659,6 +747,7 @@ content.addEventListener('click', function(e){
     var i = item.getAttribute('data-ck');
     store.checks[i] = !store.checks[i]; save(); render(); return;
   }
+  if(e.target.closest('#submitplan')){ doSubmit(); return; }
   if(e.target.closest('#exportpdf')){ doExport(); return; }
   if(e.target.closest('#copyplan')){ doCopy(); return; }
   if(e.target.closest('#resetall')){ doReset(); return; }
