@@ -20,15 +20,16 @@
     font-family:"Malgun Gothic","맑은 고딕",-apple-system,"Segoe UI",sans-serif;
     color:var(--ink);background:var(--bg);
     font-size:16px;line-height:1.65;-webkit-text-size-adjust:100%;
+    overflow-wrap:break-word;word-break:break-word;
   }
-  #app{display:flex;flex-direction:column;height:100dvh}
+  #app{display:flex;flex-direction:column;height:100vh;height:100dvh;width:100%;max-width:100%;overflow-x:hidden}
 
   /* ── 헤더 ── */
   header{flex:0 0 auto;background:linear-gradient(135deg,#6d5ae0,#8b6ff0);color:#fff;
     padding:7px 16px 7px;padding-top:calc(7px + env(safe-area-inset-top,0))}
-  .h-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-  .h-title{font-size:15.5px;font-weight:800;letter-spacing:-.02em}
-  .h-count{font-size:13px;font-weight:700;opacity:.9;white-space:nowrap}
+  .h-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .h-title{font-size:15.5px;font-weight:800;letter-spacing:-.02em;min-width:0;max-width:calc(100% - 62px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .h-count{font-size:13px;font-weight:700;opacity:.9;white-space:nowrap;flex:0 0 auto}
   .h-sub{font-size:11px;opacity:.8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .bar{height:4px;border-radius:6px;background:rgba(255,255,255,.28);margin-top:6px;overflow:hidden}
   .bar > i{display:block;height:100%;background:#fff;border-radius:6px;transition:width .35s ease}
@@ -48,7 +49,7 @@
   .chip.done{border-color:var(--good-line)}
 
   /* ── 본문 ── */
-  .content{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:13px 16px 18px}
+  .content{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:13px 16px 18px}
   .wrap{max-width:720px;margin:0 auto}
   .eyebrow{font-size:13px;font-weight:800;color:var(--primary-d);letter-spacing:.02em}
   .screen-title{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:2px 0 4px;display:flex;align-items:center;gap:10px}
@@ -70,9 +71,9 @@
   ul.clean li{position:relative;padding-left:24px;font-size:15.5px}
   ul.clean li::before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;border-radius:50%;background:var(--primary);opacity:.6}
 
-  .gb{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:560px){.gb{grid-template-columns:1fr}}
-  .ex{border-radius:14px;padding:13px 14px;border:1.5px solid}
+  .gb{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+  @media(max-width:560px){.gb{grid-template-columns:minmax(0,1fr)}}
+  .ex{border-radius:14px;padding:13px 14px;border:1.5px solid;min-width:0}
   .ex.good{background:var(--good-bg);border-color:var(--good-line)}
   .ex.bad{background:var(--bad-bg);border-color:var(--bad-line)}
   .ex .tag{font-size:13px;font-weight:800;margin-bottom:7px;display:flex;align-items:center;gap:6px}
@@ -95,7 +96,7 @@
   .field:first-of-type{margin-top:6px}
   .field label{display:block;font-size:14px;font-weight:700;margin-bottom:6px;color:#3a3550}
   .field textarea{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;
-    font-family:inherit;font-size:15.5px;line-height:1.55;resize:vertical;min-height:52px;background:#fff;color:var(--ink)}
+    font-family:inherit;font-size:16px;line-height:1.55;resize:vertical;min-height:52px;background:#fff;color:var(--ink)}
   .field textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-t)}
 
   /* 표/카드 (인용·구조) */
@@ -151,7 +152,7 @@
   .credit{text-align:center;font-size:10.5px;color:#a7a2ba;margin-top:5px}
 
   /* 제출자 정보 입력 */
-  .field input{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;font-family:inherit;font-size:15.5px;background:#fff;color:var(--ink)}
+  .field input{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;font-family:inherit;font-size:16px;background:#fff;color:var(--ink)}
   .field input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-t)}
   /* 제출 안내 박스 */
   .notice{background:#eef7ff;border:1px solid #bfe0f5;border-radius:13px;padding:13px 15px;margin-bottom:14px;font-size:14px;line-height:1.65}
@@ -182,7 +183,7 @@
 <div id="app">
   <header>
     <div class="h-row">
-      <div class="h-title">🔬 과학 탐구 보고서, 이렇게 쓴다</div>
+      <div class="h-title">🔬 과학 탐구 보고서 쓰기</div>
       <div class="h-count" id="count">1 / 11</div>
     </div>
     <div class="h-sub">주제 정하기부터 고찰·인용까지 — 단계를 넘기며 내 보고서를 만든다</div>
