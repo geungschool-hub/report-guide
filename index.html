@@ -139,14 +139,10 @@
   /* ── 푸터 ── */
   footer{flex:0 0 auto;background:var(--card);border-top:1px solid var(--line);
     padding:7px 14px calc(7px + env(safe-area-inset-bottom,0))}
-  .nav-btns{display:flex;gap:10px;max-width:720px;margin:0 auto}
   .btn{flex:1;min-height:44px;border-radius:13px;border:none;font-family:inherit;font-size:16px;font-weight:800;
     cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 14px}
-  .btn.prev{background:#f0eef8;color:var(--primary-d)}
-  .btn.next{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(109,90,224,.35)}
-  .btn.next:hover{background:var(--primary-d)}
-  .btn.prev:hover{background:#e6e2f4}
   .btn:disabled{opacity:.4;cursor:default;box-shadow:none}
+  .swipe-hint{text-align:center;font-size:11.5px;color:var(--muted);font-weight:700;margin-bottom:3px}
   .btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--muted);flex:0 0 auto;min-width:120px}
   .btn.copy{background:var(--good);color:#fff;flex:0 0 auto;min-width:130px}
   .credit{text-align:center;font-size:10.5px;color:#a7a2ba;margin-top:5px}
@@ -201,10 +197,7 @@
   <main class="content" id="content"><div class="wrap" id="screen"></div></main>
 
   <footer>
-    <div class="nav-btns">
-      <button class="btn prev" id="prev">◀ 이전</button>
-      <button class="btn next" id="next">다음 ▶</button>
-    </div>
+    <div class="swipe-hint">← 옆으로 넘겨 이동 · 위 번호를 눌러도 돼요 →</div>
     <div class="credit">Claude AI로 이 앱을 제작함 by 고은표</div>
   </footer>
 </div>
@@ -715,10 +708,6 @@ function render(){
 
   document.getElementById('count').textContent = (idx+1)+' / '+SCREENS.length;
   document.getElementById('barfill').style.width = ((idx+1)/SCREENS.length*100)+'%';
-  document.getElementById('prev').disabled = idx===0;
-  var next = document.getElementById('next');
-  next.disabled = idx===SCREENS.length-1;
-  next.innerHTML = idx===SCREENS.length-2 ? '계획서 보기 ▶' : '다음 ▶';
   document.getElementById('content').scrollTop = 0;
   renderNav();
   save();
@@ -727,11 +716,30 @@ function render(){
 function go(i){ if(i<0||i>=SCREENS.length) return; idx=i; render(); }
 
 /* ── 이벤트 ── */
-document.getElementById('prev').addEventListener('click', function(){ go(idx-1); });
-document.getElementById('next').addEventListener('click', function(){ go(idx+1); });
 document.getElementById('nav').addEventListener('click', function(e){
   var c = e.target.closest('.chip'); if(c) go(parseInt(c.getAttribute('data-i'),10));
 });
+
+/* 좌우 스와이프로 단계 이동 (버튼 대체) — 세로 스크롤·입력과 충돌 안 나게 판별 */
+(function(){
+  var el = document.getElementById('content');
+  var x0=null, y0=null, t0=0;
+  el.addEventListener('touchstart', function(e){
+    if(e.touches.length!==1){ x0=null; return; }
+    var t=e.target;
+    if(t && t.closest && t.closest('textarea,input,button,a,select')){ x0=null; return; } // 입력/버튼 위 스와이프는 무시
+    x0=e.touches[0].clientX; y0=e.touches[0].clientY; t0=Date.now();
+  }, {passive:true});
+  el.addEventListener('touchend', function(e){
+    if(x0==null) return;
+    var dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0;
+    x0=null;
+    if(Date.now()-t0>700) return;               // 너무 느리면 스와이프 아님
+    if(Math.abs(dx)<55) return;                  // 이동량 부족
+    if(Math.abs(dx) < Math.abs(dy)*1.6) return;  // 세로 움직임이 크면 스크롤로 간주
+    if(dx<0) go(idx+1); else go(idx-1);
+  }, {passive:true});
+})();
 
 /* 본문 위임: 입력 저장 / 체크박스 / 복사 / 초기화 */
 var content = document.getElementById('content');
