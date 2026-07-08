@@ -598,7 +598,7 @@ function renderPlan(){
   h += '<div class="notice"><b>📮 어떻게 제출하나요?</b>'+
        '<div class="opt"><b>① 계획서 제출 (전원 필수)</b><br>학번·이름을 적고 아래 <b>[계획서 제출하기]</b>를 누르면 끝. 선생님이 바로 받는다. 인터넷이 안 되면 <b>[PDF로 내보내기]</b>로 저장해 내도 된다.</div>'+
        '<div class="opt"><b>② 보고서 제출 (원하는 사람만)</b><br>계획서를 바탕으로 보고서를 써서 선생님 학교 메일로 보낸다. 메일에 <b>학번·이름</b>을 꼭 적는다.<br><span class="mail">geungschool@hyehwa-h.sen.hs.kr</span></div>'+
-       '<div class="opt"><b>③ 발표 (원하는 사람만)</b><br>공지 카톡방에 올라온 <b>설문</b>에 참여해 발표 여부를 체크한다. 준비된 사람부터 수업 시간에 발표하며, <b>마지막 수업 날까지 준비하지 못하면 발표는 할 수 없다.</b></div>'+
+       '<div class="opt"><b>③ 발표 (원하는 사람만)</b><br>공지 카톡방에 올라온 <b>설문</b>에 참여해 발표 여부를 체크한다. 준비된 사람부터 수업 시간에 발표하며, <b>마지막 수업 날까지 준비하지 못하면 발표는 할 수 없다.</b> 발표자료(PPT 등)도 위 <b>학교 메일</b>로 함께 보낸다.</div>'+
        '<span class="small">생기부(세특)에는 <b>자신이 한 데까지만</b> 기록된다. 계획서만 냈으면 계획서까지, 발표까지 했으면 발표까지 반영된다.</span></div>';
 
   h += '<div class="plan-actions"><button class="btn submit" id="submitplan">'+(store.submittedAt?'🔄 다시 제출하기':'📤 계획서 제출하기')+'</button></div>';
@@ -634,7 +634,7 @@ function buildPlanText(){
     });
     out.push('');
   });
-  out.push('※ 제출 안내: ①계획서=전원 필수(앱 [계획서 제출하기]) / ②보고서=원하는 사람만, 학교 메일 geungschool@hyehwa-h.sen.hs.kr 로(학번·이름 기재) / ③발표=원하는 사람만, 공지 카톡방 설문 체크.');
+  out.push('※ 제출 안내: ①계획서=전원 필수(앱 [계획서 제출하기]) / ②보고서=원하는 사람만, 학교 메일 geungschool@hyehwa-h.sen.hs.kr 로(학번·이름 기재) / ③발표=원하는 사람만, 공지 카톡방 설문 체크·발표자료도 같은 학교 메일로 제출.');
   out.push('※ 생기부(세특)에는 자신이 한 데까지만 반영된다. 마지막 수업 날까지 발표 준비를 못 하면 발표는 불가.');
   return out.join('\n');
 }
