@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>과학 탐구 보고서, 이렇게 쓴다</title>
+<meta name="theme-color" content="#6d5ae0">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="탐구 보고서">
 <style>
   :root{
     --bg:#f5f4fb; --card:#ffffff; --ink:#241f33; --muted:#6d6a82;
@@ -36,17 +43,27 @@
 
   /* ── 단계 네비 ── */
   nav{flex:0 0 auto;background:var(--card);border-bottom:1px solid var(--line);
-    display:flex;gap:6px;padding:6px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   nav::-webkit-scrollbar{display:none}
+  .navtrack{display:flex;gap:6px;padding:6px 10px;margin-inline:auto;flex:0 0 auto}
   .chip{flex:0 0 auto;min-width:39px;height:37px;border-radius:11px;border:2px solid var(--line);
     background:#fbfaff;color:var(--muted);font-size:20px;font-weight:800;cursor:pointer;
     display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;gap:2px;
     transition:.15s;padding:0 7px}
-  .chip small{font-size:9px;font-weight:700;letter-spacing:-.02em}
+  .chip small{font-size:9px;font-weight:700;letter-spacing:-.02em;white-space:nowrap}
   .chip .num{font-size:14px}
   .chip:hover{border-color:#cfc7ee}
   .chip.on{background:var(--primary-t);border-color:var(--primary);color:var(--primary-d)}
   .chip.done{border-color:var(--good-line)}
+
+  /* 홈 화면에 추가 안내 바 */
+  .a2hs{flex:0 0 auto;display:flex;align-items:center;gap:8px;background:#efecfc;border-bottom:1px solid #d8d0f6;
+    color:#3a2f78;font-size:12.5px;line-height:1.45;padding:8px 12px}
+  .a2hs span{flex:1;min-width:0}
+  .a2hs b{font-weight:800}
+  .a2hs-x{flex:0 0 auto;width:30px;height:30px;border:none;background:transparent;color:#6d5ae0;
+    font-size:15px;font-weight:800;cursor:pointer;border-radius:8px}
+  .a2hs-x:hover{background:#e0d8f8}
 
   /* ── 본문 ── */
   .content{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:13px 16px 18px}
@@ -192,7 +209,7 @@
     <div class="bar"><i id="barfill"></i></div>
   </header>
 
-  <nav id="nav"></nav>
+  <nav id="nav"><div class="navtrack" id="navtrack"></div></nav>
 
   <main class="content" id="content"><div class="wrap" id="screen"></div></main>
 
@@ -321,7 +338,7 @@
 "good":{"text":"카페인은 청소년의 수면을 방해한다. 뇌에서 잠을 부르는 물질인 아데노신이 수용체에 붙어야 졸린데, 카페인이 그 자리를 대신 막아 버리기 때문이다. 실제로 한 수면 연구(Drake 외, 2013)에서는 잠들기 6시간 전에 마신 카페인도 그날 밤 수면을 방해했다. 그래서 저녁의 카페인은 수면 시간을 줄이고, 다음 날 집중력까지 떨어뜨린다.","why":"중심 문장→원리→자료→고찰 순서가 딱 잡혀서 **한 생각이 매끄럽게** 흐른다."},
 "bad":{"text":"카페인은 커피에 들어 있는데 요즘 학생들도 에너지 음료를 자주 마신다. 카페인은 잠도 안 오게 하고 심장도 두근거리고 몸에 안 좋다. 그런데 나는 카페에서 공부하면 집중이 잘 된다. 아무튼 카페인은 조심해야 한다.","why":"커피·에너지음료·심장·집중·경고까지 **다 뒤섞여** 중심이 없고, 논거도 없이 인상만 나열해 **횡설수설**한다."},
 "tips":[
-"문단 쓰기 전에 **'이 문단에서 할 말 한 문장'**을 먼저 정한다. 그게 중심 문장이다.",
+"문단 쓰기 전에 **'이 문단의 중심 문장'**을 먼저 정한다.",
 "중심 문장 뒤엔 **'왜냐하면'**을 붙여 논거로 잇는다. 원리·수치·실험결과 같은 사실이어야 한다.",
 "문단 끝엔 **'그래서/즉'**으로 정리 한 줄을 넣는다. 이 한 줄이 나열을 고찰로 바꿔 준다.",
 "한 문단이 **6~8문장**을 넘으면 생각이 둘일 확률이 크다. 과감하게 나눈다."
@@ -343,7 +360,7 @@
 "자료를 그대로 옮기면 **'조사'까지만** 한 거다. 내 해석을 더해야 비로소 **'보고서'**가 된다.",
 "**고찰이 곧 논거.** '이 사실 → 그래서 내 주장'으로 이으면 사실이 주장을 받쳐 준다."
 ],
-"good":{"text":"카페인은 뇌에서 아데노신 수용체를 막아 졸음을 줄인다.(사실) 그래서 밤에 에너지음료를 마시면 쉽게 잠들지 못한다.(왜 그런지 고찰) 게다가 카페인의 반감기는 약 5시간이라, 오후 6시에 마신 카페인의 절반이 밤 11시까지 몸에 남아 있다.(사실) 이 점을 보면, 시험 전날 '밤샘용'으로 마신 카페인이 오히려 수면을 방해해 다음 날 집중력을 떨어뜨릴 수 있다.(그래서 뭘 뜻하는지, 내 해석) 그래서 나는 벼락치기 카페인보다 짧은 낮잠이 더 낫다고 생각한다.(내 주장)","why":"사실마다 '그래서 뭘 뜻하나'를 붙였고, **사실 문장과 해석·주장 문장이 뚜렷이** 구분된다."},
+"good":{"text":"카페인은 뇌에서 아데노신 수용체를 막아 졸음을 줄인다.(사실) 그래서 밤에 에너지음료를 마시면 쉽게 잠들지 못한다.(그래서 뭘 뜻하는지 고찰) 게다가 카페인의 반감기는 약 5시간이라, 오후 6시에 마신 카페인의 절반이 밤 11시까지 몸에 남아 있다.(사실) 이 점을 보면, 시험 전날 '밤샘용'으로 마신 카페인이 오히려 수면을 방해해 다음 날 집중력을 떨어뜨릴 수 있다.(그래서 뭘 뜻하는지, 내 해석) 그래서 나는 벼락치기 카페인보다 짧은 낮잠이 더 낫다고 생각한다.(내 주장)","why":"사실마다 '그래서 뭘 뜻하나'를 붙였고, **사실 문장과 해석·주장 문장이 뚜렷이** 구분된다."},
 "bad":{"text":"카페인은 아데노신 수용체를 막는다. 카페인의 반감기는 약 5시간이다. 에너지음료 한 캔에는 카페인이 들어 있다. 카페인은 각성 효과가 있다.","why":"다 맞는 사실이지만 **나열만** 했다. '그래서 뭘 뜻하는지', '내 생각'이 하나도 없어서 **복붙**이랑 똑같다."},
 "tips":[
 "사실 쓴 뒤 스스로 **'그래서?'** 물어본다. 답이 안 나오면 아직 고찰 안 한 거다.",
@@ -386,7 +403,7 @@
 "citation":{
 "intro":"보고서에 \"미세먼지가 몸에 나쁘다\"라고만 쓰면 그냥 **내 생각**이다. 하지만 \"WHO 산하 국제암연구소(IARC)는 2013년 미세먼지를 **1군 발암물질**로 분류했다\"라고 출처와 함께 쓰면 주장이 **확 힘을 얻는다.** 출처는 '내가 지어낸 게 아니라 믿을 만한 데서 확인했다'는 증거다. 그러니 논거를 쓸 땐 **어디서 가져왔는지 꼭 밝힌다.** 형식은 아래만 따라 하면 된다.",
 "plagiarism":[
-"원문 그대로 베끼지 말고, 이해한 다음 **'내 말'로 바꿔 쓴다.** ('심박수가 증가한다'→'심장이 더 빨리 뛴다')",
+"원문 그대로 베끼지 말고, 이해한 다음 **'내 말'로 바꿔 쓴다.**",
 "내 말로 바꿨어도 **출처는 반드시** 밝힌다. 표현만 바꾸고 출처 안 적으면 **그것도 표절**이다.",
 "그대로 옮기고 싶으면 **큰따옴표(\"\")**로 묶고 바로 뒤에 출처. **한두 문장만** 짧게 인용한다.",
 "이미지·그래프·표를 가져왔으면 그 아래 **'출처: ○○○'** 꼭 적는다.",
@@ -395,8 +412,8 @@
 "rules":[
 {"source":"인터넷·웹사이트","format":"기관·사이트 이름, 「글 제목」, 웹주소(URL), (확인 날짜: 연. 월. 일.)","example":"질병관리청, 「미세먼지 건강 영향」, https://www.kdca.go.kr, (확인 날짜: 2026. 7. 5.)"},
 {"source":"책","format":"지은이, 『책 제목』, 출판사, 출판연도, 인용한 쪽수","example":"캠벨 외, 『생명과학 개념과 현상의 이해』, 바이오사이언스, 2021, 245쪽"},
-{"source":"뉴스 기사","format":"기자 이름, 「기사 제목」, 신문·방송사 이름, 보도 날짜","example":"김생명 기자, 「국내 초미세먼지 농도, WHO 기준의 3배」, 한국일보, 2026. 3. 12."},
-{"source":"논문·보고서","format":"지은이, 「논문·보고서 제목」, 학술지·발행기관 이름, 발행연도, 인용한 쪽수","example":"이유전 외, 「미세먼지가 폐 세포에 미치는 영향」, 한국환경보건학회지, 2024, 88쪽"},
+{"source":"뉴스 기사","format":"기자 이름, 「기사 제목」, 『신문·방송사 이름』, 보도 날짜","example":"김생명 기자, 「국내 초미세먼지 농도, WHO 기준의 3배」, 『한국일보』, 2026. 3. 12."},
+{"source":"논문·보고서","format":"지은이, 「논문·보고서 제목」, 『학술지 이름』, 발행연도, 인용한 쪽수","example":"이유전 외, 「미세먼지가 폐 세포에 미치는 영향」, 『한국환경보건학회지』, 2024, 88쪽"},
 {"source":"유튜브 영상","format":"채널 이름, 「영상 제목」, YouTube, 게시 날짜, 웹주소(URL)","example":"안될과학, 「초미세먼지는 왜 위험할까?」, YouTube, 2025. 9. 1., https://youtu.be/abc123"}
 ]
 },
@@ -466,6 +483,8 @@ SCREENS.push({kind:'citation', icon:'📌', label:'인용·출처'});
 SCREENS.push({kind:'structure', icon:'📋', label:'구조'});
 SCREENS.push({kind:'checklist', icon:'✅', label:'점검'});
 SCREENS.push({kind:'plan', icon:'📝', label:'계획서'});
+/* 단계 칩 하단 키워드 (이모지 대신 중심 키워드) */
+var STEP_KW = {topic:'주제', claim:'주장', source:'조사', outline:'개요', body:'문단', discuss:'고찰', wrap:'마무리'};
 
 var LS = 'bogoseo_guide_v1';
 var store = loadStore();
@@ -482,16 +501,16 @@ function em(t){ return esc(t).replace(/\*\*([^*]+)\*\*/g,'<span class="em">$1</s
 
 /* ── 네비게이션 렌더 ── */
 function renderNav(){
-  var nav = document.getElementById('nav');
-  nav.innerHTML = SCREENS.map(function(sc,i){
+  var track = document.getElementById('navtrack');
+  track.innerHTML = SCREENS.map(function(sc,i){
     var on = i===idx ? ' on':'';
     var inner;
-    if(sc.kind==='step'){ inner = '<span class="num">'+(i+1)+'</span><small>'+esc(sc.step.icon)+'</small>'; }
+    if(sc.kind==='step'){ inner = '<span class="num">'+(i+1)+'</span><small>'+esc(STEP_KW[sc.step.id]||'')+'</small>'; }
     else { inner = '<span>'+esc(sc.icon)+'</span><small>'+esc(sc.label)+'</small>'; }
     var title = sc.kind==='step' ? esc(sc.step.title) : esc(sc.label);
     return '<button class="chip'+on+'" data-i="'+i+'" title="'+title+'">'+inner+'</button>';
   }).join('');
-  var cur = nav.querySelector('.chip.on');
+  var cur = document.getElementById('nav').querySelector('.chip.on');
   if(cur && cur.scrollIntoView){ cur.scrollIntoView({inline:'center', block:'nearest'}); }
 }
 
@@ -569,7 +588,7 @@ function renderChecklist(){
 
 function renderPlan(){
   var h='';
-  h += '<div class="eyebrow">지금까지 채운 내용</div><div class="screen-title"><span class="ic">📝</span>내 탐구 계획서</div>';
+  h += '<div class="eyebrow">지금까지 채운 내용</div><div class="screen-title"><span class="ic">📝</span>내 주제발표 계획서</div>';
   h += '<p class="plan-intro">각 단계 \'직접 해보기\'에 적은 내용을 한곳에 모았다. 학번·이름을 적고 <b>[계획서 제출하기]</b>를 누르면 선생님에게 바로 전달된다.</p>';
 
   h += '<div class="doit" style="margin-bottom:14px"><h3>🧾 제출자 정보</h3>'+
@@ -577,10 +596,10 @@ function renderPlan(){
        '<div class="field"><label>이름</label><input class="meta-in" data-meta="name" type="text" placeholder="예: 김생명" value="'+esc(store.name||'')+'"></div></div>';
 
   h += '<div class="notice"><b>📮 어떻게 제출하나요?</b>'+
-       '<div class="opt"><b>① 계획서 제출</b> — 학번·이름을 적고 아래 <b>[계획서 제출하기]</b> 한 번이면 끝. 선생님이 바로 받는다.</div>'+
-       '<div class="opt"><b>② 보고서 제출</b> — 계획서를 바탕으로 보고서를 제대로 써서 낸다.</div>'+
-       '<div class="opt"><b>③ 발표까지</b> — 보고서를 쓰고 수업에서 발표한다.</div>'+
-       '<span class="small">셋 다 세특(과목별 세부능력 및 특기사항)에 반영된다. 인터넷이 안 되면 <b>[PDF로 내보내기]</b>로 저장해 내도 된다.</span></div>';
+       '<div class="opt"><b>① 계획서 제출 (전원 필수)</b><br>학번·이름을 적고 아래 <b>[계획서 제출하기]</b>를 누르면 끝. 선생님이 바로 받는다. 인터넷이 안 되면 <b>[PDF로 내보내기]</b>로 저장해 내도 된다.</div>'+
+       '<div class="opt"><b>② 보고서 제출 (원하는 사람만)</b><br>계획서를 바탕으로 보고서를 써서 선생님 학교 메일로 보낸다. 메일에 <b>학번·이름</b>을 꼭 적는다.<br><span class="mail">geungschool@hyehwa-h.sen.hs.kr</span></div>'+
+       '<div class="opt"><b>③ 발표 (원하는 사람만)</b><br>공지 카톡방에 올라온 <b>설문</b>에 참여해 발표 여부를 체크한다. 준비된 사람부터 수업 시간에 발표하며, <b>마지막 수업 날까지 준비하지 못하면 발표는 할 수 없다.</b></div>'+
+       '<span class="small">생기부(세특)에는 <b>자신이 한 데까지만</b> 기록된다. 계획서만 냈으면 계획서까지, 발표까지 했으면 발표까지 반영된다.</span></div>';
 
   h += '<div class="plan-actions"><button class="btn submit" id="submitplan">'+(store.submittedAt?'🔄 다시 제출하기':'📤 계획서 제출하기')+'</button></div>';
   if(store.submittedAt){
@@ -615,8 +634,8 @@ function buildPlanText(){
     });
     out.push('');
   });
-  out.push('※ 제출(택1): ①계획서  ②보고서  ③발표 — 셋 다 세특 반영.');
-  out.push('※ 계획서는 앱의 [계획서 제출하기] 버튼으로 선생님에게 바로 전달된다.');
+  out.push('※ 제출 안내: ①계획서=전원 필수(앱 [계획서 제출하기]) / ②보고서=원하는 사람만, 학교 메일 geungschool@hyehwa-h.sen.hs.kr 로(학번·이름 기재) / ③발표=원하는 사람만, 공지 카톡방 설문 체크.');
+  out.push('※ 생기부(세특)에는 자신이 한 데까지만 반영된다. 마지막 수업 날까지 발표 준비를 못 하면 발표는 불가.');
   return out.join('\n');
 }
 
@@ -786,6 +805,27 @@ document.addEventListener('keydown', function(e){
   if(e.key==='ArrowLeft') go(idx-1);
   else if(e.key==='ArrowRight') go(idx+1);
 });
+
+/* 홈 화면에 추가하면 전체화면(주소창 없음)으로 볼 수 있다는 안내 — 모바일 브라우저에서만, 1회, 닫기 가능 */
+(function(){
+  try{
+    var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone===true;
+    if(standalone) return;                                   // 이미 홈 화면 앱(전체화면)이면 안내 불필요
+    var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints||0) > 0;
+    if(!isTouch) return;                                     // 데스크톱은 생략
+    if(localStorage.getItem('bogoseo_a2hs')==='off') return; // 한 번 닫으면 다시 안 뜸
+    var ios = /iPhone|iPad|iPod/.test(navigator.userAgent||'');
+    var how = ios ? '<b>공유</b> 버튼 → <b>홈 화면에 추가</b>' : '<b>메뉴(⋮)</b> → <b>홈 화면에 추가</b>';
+    var bar = document.createElement('div');
+    bar.className = 'a2hs';
+    bar.innerHTML = '<span>📱 '+how+'를 하면 주소창 없이 <b>전체화면</b>으로 볼 수 있어요.</span>'+
+                    '<button class="a2hs-x" type="button" aria-label="닫기">✕</button>';
+    var app = document.getElementById('app'), content = document.getElementById('content');
+    if(app && content){ app.insertBefore(bar, content); }
+    var x = bar.querySelector('.a2hs-x');
+    if(x){ x.addEventListener('click', function(){ bar.remove(); try{ localStorage.setItem('bogoseo_a2hs','off'); }catch(e){} }); }
+  }catch(e){}
+})();
 
 render();
 </script>
