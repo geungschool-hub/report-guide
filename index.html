@@ -624,22 +624,34 @@ function renderChecklist(){
   return h;
 }
 
+var SUBMIT_CLOSED = true; /* 계획서 제출 마감 — 다시 받으려면 false */
+
 function renderPlan(){
   var h='';
   h += '<div class="eyebrow">지금까지 채운 내용</div><div class="screen-title"><span class="ic">📝</span>내 주제발표 계획서</div>';
-  h += '<p class="plan-intro">각 단계 \'직접 해보기\'에 적은 내용을 한곳에 모았다. 학번·이름을 적고 <b>[계획서 제출하기]</b>를 누르면 선생님에게 바로 전달된다.</p>';
+  if(SUBMIT_CLOSED){
+    h += '<p class="plan-intro">각 단계 \'직접 해보기\'에 적은 내용을 한곳에 모았다. <b>계획서 제출은 마감되었다.</b> 적은 내용은 [PDF로 내보내기]나 [전체 복사]로 보관할 수 있다.</p>';
+  }else{
+    h += '<p class="plan-intro">각 단계 \'직접 해보기\'에 적은 내용을 한곳에 모았다. 학번·이름을 적고 <b>[계획서 제출하기]</b>를 누르면 선생님에게 바로 전달된다.</p>';
+  }
 
   h += '<div class="doit" style="margin-bottom:14px"><h3>🧾 제출자 정보</h3>'+
        '<div class="field"><label>학번</label><input class="meta-in" data-meta="sid" type="text" inputmode="numeric" placeholder="예: 20701" value="'+esc(store.sid||'')+'"></div>'+
        '<div class="field"><label>이름</label><input class="meta-in" data-meta="name" type="text" placeholder="예: 김생명" value="'+esc(store.name||'')+'"></div></div>';
 
   h += '<div class="notice"><b>📮 어떻게 제출하나요?</b>'+
-       '<div class="opt"><b>① 계획서 제출 (전원 필수)</b><br>학번·이름을 적고 아래 <b>[계획서 제출하기]</b>를 누르면 끝. 선생님이 바로 받는다. 인터넷이 안 되면 <b>[PDF로 내보내기]</b>로 저장해 내도 된다.</div>'+
+       (SUBMIT_CLOSED
+         ? '<div class="opt"><b>① 계획서 제출 — 마감</b><br>계획서 제출 기간이 끝났다. 아직 못 낸 사람은 선생님께 직접 이야기한다.</div>'
+         : '<div class="opt"><b>① 계획서 제출 (전원 필수)</b><br>학번·이름을 적고 아래 <b>[계획서 제출하기]</b>를 누르면 끝. 선생님이 바로 받는다. 인터넷이 안 되면 <b>[PDF로 내보내기]</b>로 저장해 내도 된다.</div>')+
        '<div class="opt"><b>② 보고서 제출 (원하는 사람만)</b><br>계획서를 바탕으로 보고서를 써서 선생님 학교 메일로 보낸다. 메일에 <b>학번·이름</b>을 꼭 적는다.<br><span class="mail">geungschool@hyehwa-h.sen.hs.kr</span></div>'+
        '<div class="opt"><b>③ 발표 (원하는 사람만)</b><br>공지 카톡방에 올라온 <b>설문</b>에 참여해 발표 여부를 체크한다. 준비된 사람부터 수업 시간에 발표하며, <b>마지막 수업 날까지 준비하지 못하면 발표는 할 수 없다.</b> 발표자료(PPT 등)도 위 <b>학교 메일</b>로 함께 보낸다.</div>'+
        '<span class="small">생기부(세특)에는 <b>자신이 한 데까지만</b> 기록된다. 계획서만 냈으면 계획서까지, 발표까지 했으면 발표까지 반영된다.</span></div>';
 
-  h += '<div class="plan-actions"><button class="btn submit" id="submitplan">'+(store.submittedAt?'🔄 다시 제출하기':'📤 계획서 제출하기')+'</button></div>';
+  if(SUBMIT_CLOSED){
+    h += '<div class="plan-actions"><button class="btn submit" id="submitplan" disabled style="opacity:.45;cursor:not-allowed">⛔ 계획서 제출 마감</button></div>';
+  }else{
+    h += '<div class="plan-actions"><button class="btn submit" id="submitplan">'+(store.submittedAt?'🔄 다시 제출하기':'📤 계획서 제출하기')+'</button></div>';
+  }
   if(store.submittedAt){
     h += '<div class="submitted-note">✅ 제출됨 · '+esc(fmtWhen(store.submittedAt))+'<span> — 다시 제출하면 최신 내용으로 덮어써진다</span></div>';
   }
@@ -703,6 +715,7 @@ function buildSubmission(){
 }
 var submitting=false;
 function doSubmit(){
+  if(SUBMIT_CLOSED){ alert('계획서 제출이 마감되었어요. 궁금한 점은 선생님께 직접 물어봐 주세요.'); return; }
   if(submitting) return;
   var sid=(store.sid||'').trim(), name=(store.name||'').trim();
   if(!sid || !name){ alert('학번과 이름을 먼저 적어 주세요. 그래야 선생님이 누구 것인지 알 수 있어요.'); return; }
